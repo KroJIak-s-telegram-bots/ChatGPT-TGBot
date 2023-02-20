@@ -4,7 +4,7 @@ from time import asctime
 from aiogram import Bot, Dispatcher, executor, types
 
 #SETTINGS
-openai.api_key = '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'
+openai.api_key = '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'
 telegramToken = '5924249688:AAH_ApBfEgzoEqCgcXZCDp5QUrizHCmbDcw'
 logging.basicConfig(level=logging.INFO)
 bot = Bot(telegramToken)
