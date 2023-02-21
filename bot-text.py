@@ -4,14 +4,13 @@ from time import asctime
 from aiogram import Bot, Dispatcher, executor, types
 
 #SETTINGS
-openai.api_key = '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'
+openai.api_key = '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'
 telegramToken = '5924249688:AAH_ApBfEgzoEqCgcXZCDp5QUrizHCmbDcw'
 logging.basicConfig(level=logging.INFO)
 bot = Bot(telegramToken)
 dp = Dispatcher(bot=bot)
 temp = 0.1
-maxTokens= 2000
-startDialogue = 'Продолжи диалог.'
+maxTokens= 1200
 dialogues = {}
 
 def getUserInfo(message): return [message.from_user.id,
@@ -28,30 +27,40 @@ async def startHandler(message: types.Message):
 
 @dp.message_handler(commands=['clear'])
 async def clearHandler(message: types.Message):
+    global dialogues
     userId, userName, userFullName, text = getUserInfo(message)
     logging.info(f'<{asctime()}> [{userId}|{userFullName}]: {text}')
-    dialogues[int(userId)] = ''
+    try: del dialogues[userId]
+    except: pass
     await message.reply('Диалог очищен.', reply=False)
 
 @dp.message_handler()
 async def askHandler(message: types.Message):
+    global dialogues
     userId, userName, userFullName, text = getUserInfo(message)
     logging.info(f'<{asctime()}> [{userId}|{userFullName}] TO BOT: {text}')
-    curDialogue = f' Я написал: {text}'
-    if not curDialogue[-1] in ['.', '?', '!']: curDialogue += '.'
-    curDialogue += ' Ты написал: '
-    try: dialogues[int(userId)] += curDialogue
-    except: dialogues[int(userId)] = startDialogue + curDialogue
-    try:
-        answer = ask(dialogues[int(userId)], False)
-        dialogues[int(userId)] += f'{clearText(answer)}'
-        logging.info(f'<{asctime()}> BOT TO [{userId}|{userFullName}]: {answer}')
-        await message.reply(answer, reply=False)
-    except: await message.reply('Извините, я призадумался. Повторите ещё раз.', reply=False)
-
+    if not text[-1] in ['.', '?', '!']: text += '.'
+    try: dialogues[userId].append(text)
+    except: dialogues[userId] = [text]
+    temp = True
+    while temp:
+        question = 'Продолжи диалог.\n'
+        for i, phrase in enumerate(dialogues[userId]):
+            if i % 2 == 0: question += f'Я сказал: {phrase}\n'
+            else: question += f'Ты сказал: {phrase}\n'
+        question += 'Ты сказал:'
+        try:
+            answer = ask(question)
+            dialogues[userId].append(clearText(answer))
+            logging.info(f'<{asctime()}> BOT TO [{userId}|{userFullName}]: {clearText(answer)}')
+            await message.reply(answer, reply=False)
+            temp = False
+        except:
+            dialogues[userId] = dialogues[userId][2:]
+            logging.info(f'<{asctime()}> BOT TO [{userId}|{userFullName}]: ERROR-LIMIT')
 
 #CHATGPT
-def ask(pmt, clear):
+def ask(pmt):
     completion = openai.Completion.create(engine='text-davinci-003',
                                           prompt=pmt,
                                           temperature=temp,
