@@ -4,7 +4,11 @@ from time import asctime
 from aiogram import Bot, Dispatcher, executor, types
 
 #SETTINGS
-openai.api_key = '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'
+#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
+#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
+#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
+#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
+openai.api_key = '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'
 telegramToken = '5924249688:AAH_ApBfEgzoEqCgcXZCDp5QUrizHCmbDcw'
 logging.basicConfig(level=logging.INFO)
 bot = Bot(telegramToken)
@@ -23,7 +27,7 @@ def getUserInfo(message): return [message.from_user.id,
 async def startHandler(message: types.Message):
     userId, userName, userFullName, text = getUserInfo(message)
     logging.info(f'<{asctime()}> [{userId}|{userFullName}]: {text}')
-    await message.reply(f'Привет, {userName}! Я самый лучший бот, который обращается к ChatGPT запросами. Я работаю на полною катушку, так что не суди если ответ приходит долго или он зациклился. Меня кста создал самый лучший разработчик(@krojiak). Если ты хочешь очистить диалог, напиши команду /clear', reply=False)
+    await message.reply(f'Привет, {userName}! Я самый лучший бот, который обращается к ChatGPT запросами. Я работаю на полною катушку, так что не суди если ответ приходит долго или он зациклился. Меня кста создал самый лучший разработчик(@krojiak).', reply=False)
 
 @dp.message_handler(commands=['clear'])
 async def clearHandler(message: types.Message):
@@ -44,7 +48,7 @@ async def askHandler(message: types.Message):
     except: dialogues[userId] = [text]
     temp = True
     while temp:
-        question = 'Продолжи диалог.\n'
+        question = 'Ты фрактальная личность, которая только что познакомилась с собеседником. Продолжай диалог.\n'
         for i, phrase in enumerate(dialogues[userId]):
             if i % 2 == 0: question += f'Я сказал: {phrase}\n'
             else: question += f'Ты сказал: {phrase}\n'
@@ -58,6 +62,9 @@ async def askHandler(message: types.Message):
         except:
             dialogues[userId] = dialogues[userId][2:]
             logging.info(f'<{asctime()}> BOT TO [{userId}|{userFullName}]: ERROR-LIMIT')
+            if len(dialogues[userId]) == 0:
+                await message.reply('Упс, я призадумался. Напиши ещё раз.', reply=False)
+                temp = False
 
 #CHATGPT
 def ask(pmt):
