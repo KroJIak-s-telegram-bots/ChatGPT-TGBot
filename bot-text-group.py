@@ -11,7 +11,10 @@ bot = Bot(telegramToken)
 dp = Dispatcher(bot=bot)
 temp = 0.1
 maxTokens= 1200
-dialogues = {}
+dialogue = []
+pronoun = 'Пасасинтос'
+phrase = 'ERROR не отвечаю'
+character = ''
 
 def getUserInfo(message): return [message.from_user.id,
                                   message.from_user.first_name,
@@ -27,39 +30,54 @@ async def startHandler(message: types.Message):
 
 @dp.message_handler(commands=['clear'])
 async def clearHandler(message: types.Message):
-    global dialogues
+    global dialogue
     userId, userName, userFullName, text = getUserInfo(message)
     logging.info(f'<{asctime()}> [{userId}|{userFullName}]: {text}')
-    try: del dialogues[userId]
+    try: dialogue = []
     except: pass
-    await message.reply('Диалог очищен.', reply=False)
+    await message.reply('Диалог очищен.')
+
+@dp.message_handler(commands=['сharacter'])
+async def setCharacterHandler(message: types.Message):
+    global character
+    userId, userName, userFullName, text = getUserInfo(message)
+    if len(text.split()) > 1:
+        text = ' '.join(text.split()[1:])
+        if not text[-1] in ['.', '?', '!']: text += '.'
+        character = text
+        logging.info(f'<{asctime()}> [{userId}|{userFullName}] SET CHARACTER: {text}')
+        await message.reply('Личность установлена.')
+    else: await message.reply('Личность НЕ установлена.')
 
 @dp.message_handler()
 async def askHandler(message: types.Message):
-    global dialogues
+    global dialogue
     userId, userName, userFullName, text = getUserInfo(message)
     logging.info(f'<{asctime()}> [{userId}|{userFullName}] TO BOT: {text}')
     if not text[-1] in ['.', '?', '!']: text += '.'
-    try: dialogues[userId].append(text)
-    except: dialogues[userId] = [text]
+    dialogue.append([userFullName, text])
     temp = True
     while temp:
-        question = 'Ты личность, не знающая собеседника. Продолжай диалог.\n'
-        for i, phrase in enumerate(dialogues[userId]):
-            if i % 2 == 0: question += f'Я сказал: {phrase}\n'
-            else: question += f'Ты сказал: {phrase}\n'
-        question += 'Ты сказал:'
+        question = f'Тебя зовут {pronoun}. {character} Ты человек и не знаешь собеседников, но можешь познакомиться с ними во время общения. У тебя есть два важных условия при общении:\n' \
+                   f'1. Если в фразе собеседника нет упоминания твоего имени, то ты отвечаешь исключительно "{phrase}" без дополнительных фраз и почему.\n' \
+                   '2. Если в фразе собеседника есть точное упоминание твоего имени, то ты отвечаешь на его сообщение.\n' \
+                   'Продолжай диалог:\n'
+        for i, data in enumerate(dialogue): question += f'{data[0]} сказал: {data[1]}\n'
+        question += f'{pronoun} сказал: '
         try:
             answer = ask(question)
-            dialogues[userId].append(clearText(answer))
-            logging.info(f'<{asctime()}> BOT TO [{userId}|{userFullName}]: {clearText(answer)}')
-            await message.reply(answer, reply=False)
+            if phrase not in answer:
+                #print(question+answer)
+                dialogue.append([pronoun, clearText(answer)])
+                logging.info(f'<{asctime()}> BOT TO [{userId}|{userFullName}]: {clearText(answer)}')
+                await message.reply(answer)
+            else: logging.info(f'<{asctime()}> BOT TO [{userId}|{userFullName}]: DONT TALKING')
             temp = False
         except:
-            dialogues[userId] = dialogues[userId][2:]
+            dialogue = dialogue[1:]
             logging.info(f'<{asctime()}> BOT TO [{userId}|{userFullName}]: ERROR-LIMIT')
-            if len(dialogues[userId]) == 0:
-                await message.reply('Упс, я призадумался. Напиши ещё раз.', reply=False)
+            if len(dialogue) == 0:
+                await message.reply('Упс, я призадумался. Напиши ещё раз.')
                 temp = False
 
 #CHATGPT
