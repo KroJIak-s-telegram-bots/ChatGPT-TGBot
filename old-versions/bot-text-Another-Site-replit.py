@@ -1,3 +1,8 @@
+#import pip
+#pip.main(['install', 'seleniumwire', 'selenium', 'fake_useragent', 'aiogram'])
+
+from background import keep_alive
+
 from aiogram import Bot, Dispatcher, executor, types
 from seleniumwire import webdriver
 from selenium.webdriver.common.by import By
@@ -16,9 +21,10 @@ dp = Dispatcher(bot=bot)
 data = {}
 curIdSession = -1
 secretKey = 'ILoveYourMom'
-options = webdriver.EdgeOptions()
+options = webdriver.ChromeOptions()
 options.add_argument(f'user-agent={UserAgent().random}')
-options.add_experimental_option('debuggerAddress', 'localhost:8989')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-dev-shm-usage')
 mainUrl = 'https://chat.forefront.ai/'
 
 addToClipBoard = lambda text: os.system(f'echo {text.strip()}| clip')
@@ -182,9 +188,10 @@ async def mainHandler(message: types.Message):
             listChats = getFromXPATH('alone', 'ul', 'role', 'list')
             choiceFolder = getFromXPATH('list', 'div', 'class', 'flex gap-2', mObject=listChats)
             while len(choiceFolder) == 0: getFromXPATH('list', 'div', 'class', 'flex gap-2', mObject=listChats)
-            sleep(0.5)
+            sleep(1)
             choiceFolderIn = getFromXPATH('list', 'div', 'class', 'relative', mObject=choiceFolder[0], level='single')
             choiceFolderIn[1].click()
+            sleep(1)
             optionsFolder = getFromXPATH('alone', 'div', 'class', 'pl-4 pr-2 flex items-center gap-1 justify-center absolute right-0 h-full')
             optionsFolder.click()
             buttonsDeleteFolder = getFromXPATH('alone', 'li', 'class', 'flex gap-[6px] text-th-primary-medium hover:text-th-primary-dark items-center p-1 cursor-pointer hover:bg-th-background-hover text-xs px-3 py-2 ')
@@ -279,6 +286,6 @@ def main():
     executor.start_polling(dp)
 
 if __name__ == '__main__':
-    #os.startfile('hidden-browser.vbs')
-    driver = webdriver.Edge(options=options)
+    keep_alive()
+    driver = webdriver.Chrome(options=options)
     main()
