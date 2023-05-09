@@ -1,3 +1,5 @@
+from background import keep_alive
+
 from telebot import TeleBot, types
 from threading import Thread
 from queue import Queue
@@ -20,18 +22,26 @@ messageQueue = Queue()
 secretKey = 'ILoveYourMom'
 emptyMessage = '...'
 pronoun = 'Пасасинтос'
-whiteListChatId = [1250991011, -1001781762107, -1001785863848]
-options = webdriver.EdgeOptions()
+whiteListChatId = [1250991011]
+options = webdriver.ChromeOptions()
 options.add_argument(f'user-agent={UserAgent().random}')
-options.add_experimental_option('debuggerAddress', 'localhost:8989')
 options.add_argument(f"window-size={size[0]},{size[1]}")
+
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-dev-shm-usage')
+
+options.add_argument('--allow-profiles-outside-user-dir')
+options.add_argument('--enable-profile-shortcut-manager')
+options.add_argument(r'user-data-dir=.\User')
+options.add_argument('--profile-directory=profile')
+
 mainUrl = 'https://chat.forefront.ai/'
 
 addToClipBoard = lambda text: pyperclip.copy(text.strip())
 
 def getFromXPATH(count, typeObject, fr, names, mObject='driver', level='all'):
     if mObject == 'driver': mObject = driver
-    if level == 'all': slash = './/'
+    if level == 'all': slash = '//'
     elif level == 'single': slash = './'
     else: return None
     if count == 'list': return list(mObject.find_elements(By.XPATH, f'{slash}{typeObject}[@{fr}="{names}"]'))
@@ -97,7 +107,6 @@ def createDialogue(chatId, userFullName, userText, message):
             answers = getFromXPATH('list', 'div', 'class', 'post-markdown flex flex-col gap-4 text-th-primary-dark text-base')
             if len(answers) > len(answersBefore):
                 answer = [x for x in answers if x not in answersBefore]
-                print(len(answer))
                 resAnswer = answer[0].get_attribute('textContent')
                 if oldResAnswer != resAnswer:
                     delay = time() + 3
@@ -116,7 +125,8 @@ def createDialogue(chatId, userFullName, userText, message):
                         for buttonT in buttonsTable:
                             buttonText = buttonT.get_attribute('textContent')
                             resAnswer = resAnswer.replace(buttonText, '\n')
-                        table = getFromXPATH('alone', 'table', 'class', 'w-full text-left bg rounded px-2', mObject=answer[0])
+                        tables = getFromXPATH('list', 'table', 'class', 'w-full text-left bg rounded px-2', mObject=answer[0])
+                        table = tables[-1]
                         resTableText = '\n'
                         columns = getFromXPATH('list', 'th', 'class', 'px-3 py-2 border-r  border-th-border-primary whitespace-nowrap last:border-r-0 text-th-primary-dark bg-th-background', mObject=table)
                         raws = getFromXPATH('list', 'td', 'class', 'border-r border-th-border-primary px-3 py-2 whitespace-nowrap last:border-r-0 text-th-primary-dark bg-th-background', mObject=table)
@@ -255,13 +265,13 @@ def mainHandler():
 
                 tabChat = getFromXPATH('alone', 'div', 'class', 'group relative min-w-[200px] max-w-[200px] h-[36px] py-2 px-4 flex items-center gap-2 cursor-pointer bg-th-background')
                 chats = getFromXPATH('list', 'li', 'role', 'listitem')
-                for chat in chats:
+                for i, chat in enumerate(chats):
                     nameChat = chat.get_attribute('textContent')
                     nameTabChat = tabChat.get_attribute('textContent')
                     if nameChat.lower() == nameTabChat.lower():
                         data[chatId]['hasChat'] = True
-                        optionsChat = getFromXPATH('alone', 'div', 'class', 'pl-4 pr-2 flex items-center gap-1 justify-center absolute right-0 h-full', mObject=chat)
-                        optionsChat.click()
+                        optionsChat = getFromXPATH('list', 'div', 'class', 'pl-4 pr-2 flex items-center gap-1 justify-center absolute right-0 h-full')
+                        optionsChat[i].click()
                         buttonRenameChat = getFromXPATH('alone', 'li', 'class', 'flex gap-2 text-th-primary-medium hover:text-th-primary-dark items-center cursor-pointer hover:bg-th-background-hover font-medium text-xs px-3 py-2 border-b border-th-border-secondary', mObject=chat)
                         buttonRenameChat.click()
                         inputRenameChat = getFromXPATH('alone', 'input', 'class', 'text-th-primary-medium bg-inherit text-xs whitespace-nowrap flex-1 overflow-hidden outline-none', mObject=chat)
@@ -313,6 +323,6 @@ def main():
     bot.polling(none_stop=True)
 
 if __name__ == '__main__':
-    os.startfile('hidden-browser.vbs')
-    driver = webdriver.Edge(options=options)
+    keep_alive()
+    driver = webdriver.Chrome(options=options)
     main()
