@@ -1,3 +1,5 @@
+#v1.2.0
+
 from flask import Flask
 from threading import Thread
 

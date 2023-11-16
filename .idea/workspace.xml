@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="13dc314b-3b2d-4d31-af39-ae9eafc9bfbb" name="Changes" comment="Reset All commits" />
+    <list default="true" id="13dc314b-3b2d-4d31-af39-ae9eafc9bfbb" name="Changes" comment="Add files - v0.2.0">
+      <change beforePath="$PROJECT_DIR$/bot-code.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot-text-group.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot-text.py" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -46,7 +50,7 @@
       <workItem from="1690129874347" duration="529000" />
       <workItem from="1690131023792" duration="313000" />
       <workItem from="1690137281189" duration="241000" />
-      <workItem from="1700108348365" duration="511000" />
+      <workItem from="1700108348365" duration="892000" />
     </task>
     <task id="LOCAL-00001" summary="Reset All commits">
       <option name="closed" value="true" />
@@ -64,14 +68,66 @@
       <option name="project" value="LOCAL" />
       <updated>1700108568259</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Add files - v0.2.0">
+      <option name="closed" value="true" />
+      <created>1700108974781</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1700108974781</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/main" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/openai" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Reset All commits" />
-    <option name="LAST_COMMIT_MESSAGE" value="Reset All commits" />
+    <MESSAGE value="Add files - v0.2.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add files - v0.2.0" />
   </component>
 </project>
