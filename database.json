@@ -1,0 +1,16 @@
+{
+    "users": {
+        "1250991011": {
+            "username": "krojiak",
+            "fullname": "Андрей Растопшин",
+            "lang": "ru_RU",
+            "permission": "admin"
+        },
+        "824986031": {
+            "username": "ayffe",
+            "fullname": "Kodya",
+            "lang": "ru_RU",
+            "permission": "admin"
+        }
+    }
+}

@@ -1,1 +1,0 @@
-"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --remote-debugging-port=8989 --user-data-dir="D:\PycharmProjects\ChatGPT-TGBot\browser-edge"

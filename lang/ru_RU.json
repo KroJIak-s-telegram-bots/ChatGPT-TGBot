@@ -1,0 +1,7 @@
+{
+  "start.message": "Привет, %{}%! Я - бот использующий API ChatGPT.",
+
+  "permissons.getadminkey": "Введите ключевое слово:",
+
+  "clear.message": "Диалог очищен."
+}
