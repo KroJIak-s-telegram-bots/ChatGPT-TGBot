@@ -37,17 +37,32 @@ class dbWorker:
 		if str(userId) in dbData['users']: return True
 		else: return False
 
-	def addNewUser(self, userId, username, fullname, lang, permission='default'):
+	def addNewUser(self, userId, username, fullname, lang, model, permission='default', messages=[]):
 		dbData = self.get()
 		dbData['users'][str(userId)] = dict(username=username,
 									   fullname=fullname,
 									   lang=lang,
-									   permission=permission)
+									   model=model,
+									   permission=permission,
+									   messages=messages)
 		self.save(dbData)
 
 	def setInUser(self, userId, key, value):
 		dbData = self.get()
 		dbData['users'][str(userId)][str(key)] = value
+		self.save(dbData)
+
+	def addNewMessageInUser(self, userId, role, message):
+		dbData = self.get()
+		curMessage = { 'role': role,
+					  'content': message }
+		dbData['users'][str(userId)]['messages'].append(curMessage)
+		self.save(dbData)
+
+	def removeLastMessageInUser(self, userId):
+		dbData = self.get()
+		userMessages = dbData['users'][str(userId)]['messages']
+		if userMessages: userMessages.pop(-1)
 		self.save(dbData)
 
 	def getFromUser(self, userId, key):
@@ -65,4 +80,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-

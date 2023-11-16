@@ -1,3 +1,4 @@
+#v3.2.0
 
 def getCorrectPathByPyScript(file):
     mainPath = '/'.join(file.split('/')[:-1])
