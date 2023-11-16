@@ -1,0 +1,16 @@
+{
+  "start.message": "Привет, %{}%! Я - бот использующий API ChatGPT.",
+
+  "permissons.getadminkey": "[Система] Введите ключевое слово:",
+
+  "clear.message": "<b>[Система]</b> Диалог очищен",
+  "changemodel.message": "<b>[Система]</b> Модель изменена на %{}%",
+
+  "sending.message": "<b>Печатаю...</b>",
+  "error.message": "<b>[Система]</b> Ошибка :(",
+
+  "button.selected.model": "\uD83D\uDFE2 %{}% \uD83D\uDFE2",
+  "button.unselected.model": "\uD83E\uDD16 %{}% \uD83E\uDD16",
+
+  "button.clear": "❌ Очистить ❌"
+}
