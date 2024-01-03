@@ -11,7 +11,7 @@ from g4f import Provider
 # from background import keep_alive
 from random import choice
 
-print(f'[G4F Version] {g4f.version}; Last: {g4f.version_check}')
+print(f'[G4F Version] {g4f.debug.get_version()}; Last: {g4f.debug.version_check}')
 MAIN_PATH = getCorrectPathByPyScript(__file__)
 
 # SETTINGS
