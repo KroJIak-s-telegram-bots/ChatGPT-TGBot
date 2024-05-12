@@ -1,4 +1,3 @@
-from correctPathModule import getCorrectPathByPyScript
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
 from database import dbWorker
@@ -8,16 +7,14 @@ import asyncio
 import json
 import g4f
 from g4f import Provider
-# from background import keep_alive
 from random import choice
 
 print(f'[G4F Version] {g4f.debug.get_version()}; Last: {g4f.debug.version_check}')
-MAIN_PATH = getCorrectPathByPyScript(__file__)
 
 # SETTINGS
 logging.basicConfig(level=logging.INFO)
 config = ConfigParser()
-config.read(f'{MAIN_PATH}/config.ini')
+config.read('config.ini')
 token = config['Telegram']['token']
 alias = config['Telegram']['alias']
 rawAvailableModels = config['GPT']['availableModels']
@@ -34,17 +31,14 @@ db = dbWorker(databaseFileName)
 bot = Bot(token)
 dp = Dispatcher()
 providersGPT3_5 = [
-    Provider.ChatForAi,
-    Provider.GPTalk,
-    Provider.AiAsk,
-    Provider.Yqcloud
+    Provider.You
 ]
 
 
 def getTranslation(userId, name, inserts=[], lang=None):
     if lang is None: nameLang = db.getFromUser(userId, 'lang')
     else: nameLang = lang
-    with open(f'{MAIN_PATH}/lang/{nameLang}.json', encoding='utf-8') as langFile:
+    with open(f'lang/{nameLang}.json', encoding='utf-8') as langFile:
         langJson = json.load(langFile)
     text = langJson[name]
     if len(inserts) > 0:
@@ -63,18 +57,16 @@ async def getResponseGPT(userId, messages, model):
     while True:
         countAttempts += 1
         try:
-            if model == 'gpt-4': provider = None
-            else: provider = choice(providersGPT3_5)
             response = await g4f.ChatCompletion.create_async(
                 model=model,
                 messages=firstMessages+messages,
-                provider=provider
+                provider=choice(providersGPT3_5)
             )
-            if len(response) < 4096: return response
+            if len(response) < 4096: return True, response
         except Exception as err: print(f'[ERROR] {err}')
-        if countAttempts > 10:
+        if countAttempts > 2:
             db.setInUser(userId, 'messages', [])
-            return getTranslation(userId, 'error.message')
+            return False, getTranslation(userId, 'error.message')
 
 def checkPermissions(userId, text):
     if db.isAdmin(userId):
@@ -107,7 +99,7 @@ def getUserInfo(message, isCommand=False):
         db.addNewUser(userInfo['userId'], userInfo['username'],
                       userInfo['userFullName'], defaultLang, defaultModel)
     elif not isCommand:
-        db.addNewMessageInUser(userInfo['userId'], 'user', userInfo['userText'])
+        db.addNewMessageInUser(userInfo['userId'], userInfo['userFullName'], userInfo['userText'])
     print(' | '.join(list(map(str, userInfo.values()))))
     return userInfo
 
@@ -189,11 +181,9 @@ async def mainHandler(message: types.Message):
     mainKeyboard = getMainKeyboard(userInfo['userId'])
     botMessage = await message.answer(getTranslation(userInfo['userId'], 'sending.message'), reply_markup=mainKeyboard, parse_mode='HTML')
     curUserModel = db.getFromUser(userInfo['userId'], 'model')
-    responseGPT = await getResponseGPT(userInfo['userId'], db.getFromUser(userInfo['userId'], 'messages'), model=curUserModel)
-    if not responseGPT:
-        db.removeLastMessageInUser(userInfo['userId'])
-        return
-    db.addNewMessageInUser(userInfo['userId'], 'bot', responseGPT)
+    successResp, responseGPT = await getResponseGPT(userInfo['userId'], db.getFromUser(userInfo['userId'], 'messages'), model=curUserModel)
+    if successResp: db.addNewMessageInUser(userInfo['userId'], 'bot', responseGPT)
+    else: db.removeLastMessageInUser(userInfo['userId'])
     await bot.delete_message(userInfo['userId'], botMessage.message_id)
     await message.answer(responseGPT, reply_markup=mainKeyboard, parse_mode='HTML')
 

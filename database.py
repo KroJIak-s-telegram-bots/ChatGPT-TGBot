@@ -1,24 +1,21 @@
-from correctPathModule import getCorrectPathByPyScript
 import json
 import os
-
-MAIN_PATH = getCorrectPathByPyScript(__file__)
 
 class dbWorker:
 	def __init__(self, databaseFileName):
 		self.databaseFileName = databaseFileName
-		files = os.listdir(f'{MAIN_PATH}/')
+		files = os.listdir()
 		if databaseFileName not in files:
 			dbData = self.getDefaultdbData()
 			self.save(dbData)
 
 	def get(self):
-		with open(f'{MAIN_PATH}/{self.databaseFileName}') as file:
+		with open(self.databaseFileName) as file:
 			dbData = json.load(file)
 		return dbData
 
 	def save(self, dbData):
-		with open(f'{MAIN_PATH}/{self.databaseFileName}', 'w') as file:
+		with open(self.databaseFileName, 'w') as file:
 			json.dump(dbData, file, indent=4, ensure_ascii=False)
 
 	def getUserIds(self):
@@ -71,7 +68,8 @@ class dbWorker:
 
 	def getDefaultdbData(self):
 		return {
-					"users": {}
+					"users": {},
+					"groups": {}
 				}
 
 def main():
